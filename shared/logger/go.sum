@@ -1,5 +1,3 @@
-github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240925101214-d7e653d25f38 h1:oUOoeyH2i91F44eLDqiOyGK5ju4BZEXuQKAFll05I60=
-github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240925101214-d7e653d25f38/go.mod h1:T+zCpliglhwncbuyfMTzJsRDfRKLz2foPvUNEdYsN3k=
 go.uber.org/multierr v1.10.0 h1:S0h4aNzvfcFsC3dRF1jLoaov7oRaKqRGC/pUEJ2yvPQ=
 go.uber.org/multierr v1.10.0/go.mod h1:20+QtiLqy0Nd6FdQB9TLXag12DsQkrbs3htMFfDN80Y=
 go.uber.org/zap v1.27.0 h1:aJMhYGrd5QSmlpLMr2MftRKl7t8J8PTZPA732ud/XR8=
