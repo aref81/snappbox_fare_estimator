@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  hermes:
+    build:
+      context: ../hermes
+      dockerfile: Dockerfile
+    container_name: hermes
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      RABBITMQ_QUEUE: delivery-data
+      CSV_FILE_PATH: /root/delivery_data.csv
+    volumes:
+      - ./data:/root/data  # Mount your local data directory for CSV files
+      - ./configs/hermes_config.yaml:/root/config/config.yaml
+    depends_on:
+      - rabbitmq

@@ -65,7 +65,7 @@ func (p *RabbitMQPublisher) PublishMessage(ctx context.Context, body []byte) err
 		return err
 	}
 
-	p.logger.Info("Message published to RabbitMQ", zap.ByteString("message", body))
+	//p.logger.Info("Message published to RabbitMQ", zap.ByteString("message", body)) // Debug only
 	return nil
 }
 
