@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/aref81/snappbox_fare_estimator/shared/haversine"
 )
 
 // DeliveryPoint represents a single GPS coordination for a Delivery, each Delivery contains a sorted list of
@@ -19,12 +20,22 @@ type Delivery struct {
 }
 
 // AddPoint adds a new DeliveryPoint to the Delivery
-func (d *Delivery) AddPoint(lat, lng float64, timestamp int64) {
-	d.Points = append(d.Points, DeliveryPoint{
+func (d *Delivery) AddPoint(lat, lng float64, timestamp int64) error {
+	newPoint := DeliveryPoint{
 		Latitude:  lat,
 		Longitude: lng,
 		Timestamp: timestamp,
-	})
+	}
+
+	if len(d.Points) != 0 {
+		err := validateDeliveryPoints(d.Points[len(d.Points)-1], newPoint)
+		if err != nil {
+			return err
+		}
+	}
+
+	d.Points = append(d.Points, newPoint)
+	return nil
 }
 
 // NewDelivery initializes a new Delivery
@@ -35,21 +46,20 @@ func NewDelivery(id int) *Delivery {
 	}
 }
 
-// ValidateDelivery checks the validity of a delivery (just a basic validation as an example of practice)
-func ValidateDelivery(delivery *Delivery) error {
-	if len(delivery.Points) == 0 {
-		return fmt.Errorf("delivery %d has no points", delivery.ID)
+// ValidateDeliveryPoints checks the validity of two consecutive delivery points
+func validateDeliveryPoints(p1 DeliveryPoint, p2 DeliveryPoint) error {
+	timeDiff := float64(p2.Timestamp-p1.Timestamp) / 3600.0
+	if timeDiff == 0 {
+		// skipping zero time differences
+		return nil
 	}
 
-	// Check if the points have valid latitude and longitude
-	for _, point := range delivery.Points {
-		if point.Latitude < -90 || point.Latitude > 90 {
-			return fmt.Errorf("invalid latitude in delivery %d", delivery.ID)
-		}
-		if point.Longitude < -180 || point.Longitude > 180 {
-			return fmt.Errorf("invalid longitude in delivery %d", delivery.ID)
-		}
-	}
+	distance := haversine.Haversine(p1.Latitude, p1.Longitude, p2.Latitude, p2.Longitude)
+	speed := distance / timeDiff
 
-	return nil
+	if speed <= 100.0 {
+		return nil
+	} else {
+		return fmt.Errorf("unvalid delivery point, speed = %f", speed)
+	}
 }
