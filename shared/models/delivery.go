@@ -60,6 +60,6 @@ func validateDeliveryPoints(p1 DeliveryPoint, p2 DeliveryPoint) error {
 	if speed <= 100.0 {
 		return nil
 	} else {
-		return fmt.Errorf("unvalid delivery point, speed = %f", speed)
+		return fmt.Errorf("invalid delivery point, speed = %f", speed)
 	}
 }
