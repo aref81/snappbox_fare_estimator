@@ -9,10 +9,10 @@ import (
 var Logger *zap.Logger
 
 // InitLogger initializes the Zap logger instance
-func InitLogger() error {
+func InitLogger(level zapcore.Level) error {
 	config := zap.Config{
 		Encoding:         "json",
-		Level:            zap.NewAtomicLevelAt(zap.InfoLevel),
+		Level:            zap.NewAtomicLevelAt(level),
 		OutputPaths:      []string{"stdout"},
 		ErrorOutputPaths: []string{"stderr"},
 		EncoderConfig: zapcore.EncoderConfig{
