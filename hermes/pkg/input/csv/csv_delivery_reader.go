@@ -11,7 +11,7 @@ import (
 	"strconv"
 )
 
-// DeliveryReader implements the I/O interface for working with CSV file
+// DeliveryReader implements the input interface for working with CSV file
 type DeliveryReader struct {
 	FilePath string
 }
@@ -23,7 +23,8 @@ func NewDeliveryReader(filePath string) input.DeliveryReader {
 	}
 }
 
-func (r *DeliveryReader) ReadDeliveries(log *zap.Logger) (map[int]*models.Delivery, error) {
+// ReadDeliveriesAtOnce implements the input interface to read Delivery data from a csv file
+func (r *DeliveryReader) ReadDeliveriesAtOnce(log *zap.Logger) (map[int]*models.Delivery, error) {
 	file, err := os.Open(r.FilePath)
 	if err != nil {
 		log.Error("failed to open file", zap.Error(err))
@@ -74,4 +75,68 @@ func (r *DeliveryReader) ReadDeliveries(log *zap.Logger) (map[int]*models.Delive
 		deliveries[currentDelivery.ID] = currentDelivery
 	}
 	return deliveries, nil
+}
+
+// StreamDeliveries reads the CSV file row by row, processes each row, and pushes it to channel
+func (r *DeliveryReader) StreamDeliveries(publisherChan chan *models.Delivery, log *zap.Logger) error {
+	file, err := os.Open(r.FilePath)
+	if err != nil {
+		log.Error("failed to open file", zap.Error(err))
+		return fmt.Errorf("failed to open file: %v", err)
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+
+	var currentDelivery *models.Delivery
+
+	for {
+		row, err := reader.Read()
+		if err != nil {
+			if err.Error() == "EOF" {
+				break
+			}
+			log.Error("Failed to read row", zap.Error(err))
+			return err
+		}
+
+		id, err := strconv.Atoi(row[0])
+		if err != nil {
+			log.Warn("Invalid delivery ID", zap.String("value", row[0]))
+			continue
+		}
+		lat, err := strconv.ParseFloat(row[1], 64)
+		if err != nil {
+			log.Warn("Invalid latitude", zap.String("value", row[1]))
+			continue
+		}
+		lng, err := strconv.ParseFloat(row[2], 64)
+		if err != nil {
+			log.Warn("Invalid longitude", zap.String("value", row[2]))
+			continue
+		}
+		timestamp, err := strconv.ParseInt(row[3], 10, 64)
+		if err != nil {
+			log.Warn("Invalid timestamp", zap.String("value", row[3]))
+			continue
+		}
+
+		// If delivery ID changes, process the last delivery and start a new one
+		if currentDelivery == nil || currentDelivery.ID != id {
+			if currentDelivery != nil {
+				// publish previous delivery
+				publisherChan <- currentDelivery
+			}
+			// Create new delivery
+			currentDelivery = models.NewDelivery(id)
+		}
+		currentDelivery.AddPoint(lat, lng, timestamp)
+	}
+
+	if currentDelivery != nil {
+		publisherChan <- currentDelivery
+	}
+
+	log.Info("CSV streaming and publishing completed successfully")
+	return nil
 }

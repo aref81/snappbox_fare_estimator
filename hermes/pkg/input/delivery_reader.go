@@ -7,5 +7,6 @@ import (
 
 // DeliveryReader is an abstraction for reading Delivery data
 type DeliveryReader interface {
-	ReadDeliveries(log *zap.Logger) (map[int]*models.Delivery, error)
+	ReadDeliveriesAtOnce(log *zap.Logger) (map[int]*models.Delivery, error)
+	StreamDeliveries(publisherChan chan *models.Delivery, log *zap.Logger) error
 }
