@@ -107,7 +107,7 @@ func (r *DeliveryReader) StreamDeliveries(publisherChan chan *models.Delivery, l
 		}
 		lat, err := strconv.ParseFloat(row[1], 64)
 		if err != nil {
-			log.Warn("Invalid latitude", zap.String("value", row[1]))
+			log.Warn("Invalid latitude", zap.String("value", row[1]), zap.Int("delivery_id", id))
 			continue
 		}
 		lng, err := strconv.ParseFloat(row[2], 64)
@@ -130,7 +130,10 @@ func (r *DeliveryReader) StreamDeliveries(publisherChan chan *models.Delivery, l
 			// Create new delivery
 			currentDelivery = models.NewDelivery(id)
 		}
-		currentDelivery.AddPoint(lat, lng, timestamp)
+		err = currentDelivery.AddPoint(lat, lng, timestamp)
+		if err != nil {
+			log.Warn("Failed to add new delivery point", zap.Error(err))
+		}
 	}
 
 	if currentDelivery != nil {

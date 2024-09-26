@@ -34,11 +34,6 @@ func (p Processor) ProcessDeliveries(deliveryChan <-chan *models.Delivery) error
 
 // processSingleDelivery processes a delivery, including validation and pushing
 func (p Processor) processSingleDelivery(delivery *models.Delivery) error {
-	// Example: Validate the delivery (just as an example)
-	if err := models.ValidateDelivery(delivery); err != nil {
-		return err
-	}
-
 	deliveryBytes, err := json.Marshal(delivery)
 	if err != nil {
 		p.log.Error("Failed to serialize delivery", zap.Int("delivery_id", delivery.ID), zap.Error(err))

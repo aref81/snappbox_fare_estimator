@@ -6,13 +6,14 @@ toolchain go1.23.1
 
 require (
 	github.com/aref81/snappbox_fare_estimator/shared/logger v0.0.0-20240926202553-a85b904b3806
-	github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240926200124-090789e81680
+	github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240926212332-3c4322a338ae
 	github.com/spf13/viper v1.19.0
 	github.com/streadway/amqp v1.1.0
 	go.uber.org/zap v1.27.0
 )
 
 require (
+	github.com/aref81/snappbox_fare_estimator v0.0.0-20240926212217-4931ec870fc2 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
