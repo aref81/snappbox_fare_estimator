@@ -50,6 +50,6 @@ func main() {
 	go processor.ProcessDeliveries(deliveryPointChan)
 	wg.Add(1)
 
-	zLogger.Info("Hermes microservice completed successfully")
+	zLogger.Info("Hermes microservice started successfully")
 	wg.Wait()
 }
