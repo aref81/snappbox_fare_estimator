@@ -1,3 +1,6 @@
-CSVFilePath: "/root/data/delivery_data.csv"
-RabbitMQURL: "amqp://guest:guest@rabbitmq:5672/"
-RabbitMQQueue: "delivery-data"
+rabbitmq:
+  url: "amqp://guest:guest@rabbitmq:5672/"
+  queue: "delivery-data"
+
+csv:
+  file_path: "delivery_data.csv"

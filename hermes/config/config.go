@@ -1,28 +1,35 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/spf13/viper"
 	"log"
 )
 
-// Config is the structure for the hermes microservice
-type Config struct {
-	CSVFilePath   string
-	RabbitMQURL   string
-	RabbitMQQueue string
+// RabbitMQConfig holds RabbitMQ connection details
+type RabbitMQConfig struct {
+	URL   string `mapstructure:"url" json:"url"`
+	Queue string `mapstructure:"queue" json:"queue"`
 }
 
-// LoadConfig initializes Viper and loads the configuration from the yaml file
+// CSVConfig holds CSV file config
+type CSVConfig struct {
+	FilePath string `mapstructure:"file_path" json:"file_path"`
+}
+
+// Config is the config structure of the Hermes service
+type Config struct {
+	RabbitMQ RabbitMQConfig `mapstructure:"rabbitmq" json:"rabbitmq"`
+	CSV      CSVConfig      `mapstructure:"csv" json:"csv"`
+}
+
+// LoadConfig initializes Viper and loads the configuration from the yaml
 func LoadConfig() (*Config, error) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("config/")
-
-	viper.SetDefault("CSVFilePath", "delivery_data.csv")
-	viper.SetDefault("RabbitMQURL", "amqp://guest:guest@localhost:5672/")
-	viper.SetDefault("RabbitMQQueue", "delivery-data")
 
 	if err := viper.ReadInConfig(); err != nil {
 		fmt.Println("No config file found, using environment variables and defaults.")
@@ -30,20 +37,21 @@ func LoadConfig() (*Config, error) {
 		fmt.Printf("Config file loaded: %s\n", viper.ConfigFileUsed())
 	}
 
-	logConfig()
-
-	config := &Config{
-		CSVFilePath:   viper.GetString("CSVFilePath"),
-		RabbitMQURL:   viper.GetString("RabbitMQURL"),
-		RabbitMQQueue: viper.GetString("RabbitMQQueue"),
+	config := &Config{}
+	if err := viper.Unmarshal(config); err != nil {
+		return nil, fmt.Errorf("unable to decode into config struct: %v", err)
 	}
+
+	logConfig(config)
 
 	return config, nil
 }
 
 // logConfig prints out all the config values (for debugging)
-func logConfig() {
-	log.Printf("CSVFilePath: %s", viper.GetString("CSVFilePath"))
-	log.Printf("RabbitMQURL: %s", viper.GetString("RabbitMQURL"))
-	log.Printf("RabbitMQQueue: %s", viper.GetString("RabbitMQQueue"))
+func logConfig(config *Config) {
+	conf, err := json.MarshalIndent(config, "", "\t")
+	if err != nil {
+		return
+	}
+	log.Printf("Hermes Config: %s", conf)
 }

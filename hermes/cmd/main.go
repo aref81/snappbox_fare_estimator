@@ -30,7 +30,7 @@ func main() {
 	zLogger := logger.Logger
 
 	// Initialize RabbitMQ connection
-	rabbitMQPublisher, err := rabbitMQ.NewRabbitMQPublisher(cfg.RabbitMQURL, cfg.RabbitMQQueue, zLogger)
+	rabbitMQPublisher, err := rabbitMQ.NewRabbitMQPublisher(cfg.RabbitMQ.URL, cfg.RabbitMQ.Queue, zLogger)
 	if err != nil {
 		zLogger.Fatal("Failed to initialize RabbitMQ publisher", zap.Error(err))
 		return
@@ -41,7 +41,7 @@ func main() {
 	wg := sync.WaitGroup{}
 
 	// Initialize reader stream
-	reader := csv.NewDeliveryReader(cfg.CSVFilePath)
+	reader := csv.NewDeliveryReader(cfg.CSV.FilePath)
 	go reader.StreamDeliveryPoints(deliveryPointChan, zLogger)
 	wg.Add(1)
 
