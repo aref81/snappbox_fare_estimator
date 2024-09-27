@@ -14,6 +14,8 @@ github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240926212849-a7
 github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240926212849-a7b46d29309e/go.mod h1:mX9FuuMSiTwTi2u9GRYXPG4c5nVfraBJFkv+gp+/osQ=
 github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240927094601-7e37ae843ece h1:qd9p3jdX0FEdAJG1f7cvCapXxMpUiifIzxB/pTkI9u8=
 github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240927094601-7e37ae843ece/go.mod h1:mX9FuuMSiTwTi2u9GRYXPG4c5nVfraBJFkv+gp+/osQ=
+github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240927102507-5b0c73dba15d h1:qnW79dgVWgWe776hKAltU92DsBmLgEUKqyYmTGqcJqM=
+github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240927102507-5b0c73dba15d/go.mod h1:mX9FuuMSiTwTi2u9GRYXPG4c5nVfraBJFkv+gp+/osQ=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=

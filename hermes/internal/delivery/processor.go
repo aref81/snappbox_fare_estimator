@@ -21,7 +21,7 @@ func NewDeliveryProcessor(rabbitMQPublisher *rabbitMQ.RabbitMQPublisher, log *za
 }
 
 // ProcessDeliveries process all coming deliveries from a channel
-func (p Processor) ProcessDeliveries(deliveryPointChan <-chan *models.DeliveryPoint) error {
+func (p *Processor) ProcessDeliveries(deliveryPointChan <-chan *models.DeliveryPoint) error {
 	var currentDelivery *models.Delivery
 	var previousPoint *models.DeliveryPoint
 
@@ -71,7 +71,7 @@ func (p Processor) ProcessDeliveries(deliveryPointChan <-chan *models.DeliveryPo
 }
 
 // processSingleDelivery processes a delivery, including validation and pushing
-func (p Processor) processSingleDelivery(delivery *models.Delivery) error {
+func (p *Processor) processSingleDelivery(delivery *models.Delivery) error {
 	deliveryBytes, err := json.Marshal(delivery)
 	if err != nil {
 		p.log.Error("Failed to serialize delivery", zap.Int("delivery_id", delivery.ID), zap.Error(err))

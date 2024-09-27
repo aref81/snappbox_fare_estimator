@@ -6,7 +6,7 @@ toolchain go1.23.1
 
 require (
 	github.com/aref81/snappbox_fare_estimator/shared/logger v0.0.0-20240926202553-a85b904b3806
-	github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240927094601-7e37ae843ece
+	github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240927102507-5b0c73dba15d
 	github.com/spf13/viper v1.19.0
 	github.com/streadway/amqp v1.1.0
 	go.uber.org/zap v1.27.0
