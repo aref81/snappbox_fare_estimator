@@ -15,9 +15,10 @@ type DeliveryPoint struct {
 
 // DeliverySegment represents a segment of the road traveled, including two DeliveryPoints and Speed calculated for it.
 type DeliverySegment struct {
-	StartTime int64
-	Speed     float64
-	Distance  float64
+	StartTime   int64
+	ElapsedTime float64
+	Speed       float64
+	Distance    float64
 }
 
 // Delivery represents an individual Delivery Data, which includes and ID and multiple DeliverySegments
@@ -34,9 +35,10 @@ func (d *Delivery) AddSegment(startPoint DeliveryPoint, endPoint DeliveryPoint) 
 	}
 
 	segment := DeliverySegment{
-		StartTime: startPoint.Timestamp,
-		Speed:     segmentSpeed,
-		Distance:  segmentDistance,
+		StartTime:   startPoint.Timestamp,
+		ElapsedTime: float64(endPoint.Timestamp-startPoint.Timestamp) / 3600.0,
+		Speed:       segmentSpeed,
+		Distance:    segmentDistance,
 	}
 
 	err = validateSegment(segment)
