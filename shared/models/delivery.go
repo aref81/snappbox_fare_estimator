@@ -7,9 +7,10 @@ import (
 
 // DeliveryPoint represents a single GPS coordination for a Delivery
 type DeliveryPoint struct {
-	Latitude  float64
-	Longitude float64
-	Timestamp int64
+	DeliveryID int
+	Latitude   float64
+	Longitude  float64
+	Timestamp  int64
 }
 
 // DeliverySegment represents a segment of the road traveled, including two DeliveryPoints and Speed calculated for it.
