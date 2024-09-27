@@ -16,12 +16,18 @@ services:
       context: ../hermes
       dockerfile: Dockerfile
     container_name: hermes
-    environment:
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
-      RABBITMQ_QUEUE: delivery-data
-      CSV_FILE_PATH: /root/delivery_data.csv
     volumes:
       - ./data:/root/data  # Mount your local data directory for CSV files
       - ./configs/hermes_config.yaml:/root/config/config.yaml
+    depends_on:
+      - rabbitmq
+
+  atalanta:
+    build:
+      context: ../atalanta
+      dockerfile: Dockerfile
+    container_name: atalanta
+    volumes:
+      - ./configs/atalanta_config.yaml:/root/config/config.yaml
     depends_on:
       - rabbitmq

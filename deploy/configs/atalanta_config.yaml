@@ -1,0 +1,18 @@
+rabbitmq:
+  url: "amqp://guest:guest@rabbitmq:5672/"
+  delivery_queue: "delivery-data"
+  fare_queue: "fares-data"
+
+service:
+  log_level: "info"
+
+fare_rules:
+  min_fare: 3.47
+  flag_amount: 1.30
+  idle_fare_per_hour: 11.90
+  moving_day_fare_per_km: 0.74
+  moving_night_fare_per_km: 1.30
+
+time_boundaries:
+  day_start_hour: 5
+  night_end_hour: 24
