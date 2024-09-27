@@ -15,9 +15,9 @@ type DeliveryPoint struct {
 
 // DeliverySegment represents a segment of the road traveled, including two DeliveryPoints and Speed calculated for it.
 type DeliverySegment struct {
-	StartPoint DeliveryPoint
-	EndPoint   DeliveryPoint
-	Speed      float64
+	StartTime int64
+	Speed     float64
+	Distance  float64
 }
 
 // Delivery represents an individual Delivery Data, which includes and ID and multiple DeliverySegments
@@ -28,15 +28,15 @@ type Delivery struct {
 
 // AddSegment adds a new DeliverySegment to the Delivery after validation
 func (d *Delivery) AddSegment(startPoint DeliveryPoint, endPoint DeliveryPoint) error {
-	segmentSpeed, err := calculateSpeed(startPoint, endPoint)
+	segmentSpeed, segmentDistance, err := calculateSpeedAndDistance(startPoint, endPoint)
 	if err != nil {
 		return err
 	}
 
 	segment := DeliverySegment{
-		StartPoint: startPoint,
-		EndPoint:   endPoint,
-		Speed:      segmentSpeed,
+		StartTime: startPoint.Timestamp,
+		Speed:     segmentSpeed,
+		Distance:  segmentDistance,
 	}
 
 	err = validateSegment(segment)
@@ -66,14 +66,14 @@ func validateSegment(segment DeliverySegment) error {
 }
 
 // calculateSpeed calculates the speed for a segment using haversine distance
-func calculateSpeed(p1 DeliveryPoint, p2 DeliveryPoint) (float64, error) {
+func calculateSpeedAndDistance(p1 DeliveryPoint, p2 DeliveryPoint) (float64, float64, error) {
 	timeDiff := float64(p2.Timestamp-p1.Timestamp) / 3600.0
 	if timeDiff == 0 {
 		// skipping zero time differences
-		return 0, fmt.Errorf("failed to calculate the speed, timeDiff = %f", timeDiff)
+		return 0, 0, fmt.Errorf("failed to calculate the speed, timeDiff = %f", timeDiff)
 	}
 
 	distance := haversine.Haversine(p1.Latitude, p1.Longitude, p2.Latitude, p2.Longitude)
 	speed := distance / timeDiff
-	return speed, nil
+	return speed, distance, nil
 }
