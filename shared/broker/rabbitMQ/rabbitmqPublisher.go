@@ -1,4 +1,4 @@
-package broker
+package rabbitMQ
 
 import (
 	"context"
@@ -14,16 +14,16 @@ type RabbitMQPublisher struct {
 }
 
 // NewRabbitMQPublisher initializes a new RabbitMQ connection and starts a queue
-func NewRabbitMQPublisher(brokerURL, queueName string, logger *zap.Logger) (*RabbitMQPublisher, error) {
+func NewRabbitMQPublisher(brokerURL, queueName string, log *zap.Logger) (*RabbitMQPublisher, error) {
 	conn, err := amqp.Dial(brokerURL)
 	if err != nil {
-		logger.Error("Failed to connect to RabbitMQ", zap.Error(err))
+		log.Error("Failed to connect to RabbitMQ", zap.Error(err))
 		return nil, err
 	}
 
 	channel, err := conn.Channel()
 	if err != nil {
-		logger.Error("Failed to create channel", zap.Error(err))
+		log.Error("Failed to create channel", zap.Error(err))
 		return nil, err
 	}
 
@@ -36,7 +36,7 @@ func NewRabbitMQPublisher(brokerURL, queueName string, logger *zap.Logger) (*Rab
 		nil,
 	)
 	if err != nil {
-		logger.Error("Failed to declare queue", zap.Error(err))
+		log.Error("Failed to declare queue", zap.Error(err))
 		return nil, err
 	}
 
@@ -44,7 +44,7 @@ func NewRabbitMQPublisher(brokerURL, queueName string, logger *zap.Logger) (*Rab
 		conn:    conn,
 		channel: channel,
 		queue:   queue,
-		logger:  logger,
+		logger:  log,
 	}, nil
 }
 
