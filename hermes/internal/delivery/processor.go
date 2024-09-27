@@ -3,17 +3,17 @@ package delivery
 import (
 	"context"
 	"encoding/json"
-	"github.com/aref81/snappbox_fare_estimator/hermes/pkg/broker"
+	"github.com/aref81/snappbox_fare_estimator/shared/broker/rabbitMQ"
 	"github.com/aref81/snappbox_fare_estimator/shared/models"
 	"go.uber.org/zap"
 )
 
 type Processor struct {
-	rabbitMQPublisher *broker.RabbitMQPublisher
+	rabbitMQPublisher *rabbitMQ.RabbitMQPublisher
 	log               *zap.Logger
 }
 
-func NewDeliveryProcessor(rabbitMQPublisher *broker.RabbitMQPublisher, log *zap.Logger) *Processor {
+func NewDeliveryProcessor(rabbitMQPublisher *rabbitMQ.RabbitMQPublisher, log *zap.Logger) *Processor {
 	return &Processor{
 		rabbitMQPublisher: rabbitMQPublisher,
 		log:               log,
@@ -21,13 +21,51 @@ func NewDeliveryProcessor(rabbitMQPublisher *broker.RabbitMQPublisher, log *zap.
 }
 
 // ProcessDeliveries process all coming deliveries from a channel
-func (p Processor) ProcessDeliveries(deliveryChan <-chan *models.Delivery) error {
-	for delivery := range deliveryChan {
-		err := p.processSingleDelivery(delivery)
-		if err != nil {
-			p.log.Warn(err.Error())
+func (p Processor) ProcessDeliveries(deliveryPointChan <-chan *models.DeliveryPoint) error {
+	var currentDelivery *models.Delivery
+	var previousPoint *models.DeliveryPoint
+
+	for point := range deliveryPointChan {
+		// If delivery ID changes, process the last delivery and start a new one
+		if currentDelivery == nil || currentDelivery.ID != point.DeliveryID {
+			if currentDelivery != nil {
+				// process previous delivery
+				go func(delivery *models.Delivery) {
+					err := p.processSingleDelivery(delivery)
+					if err != nil {
+						p.log.Warn("Failed to process delivery",
+							zap.Int("delivery_id", delivery.ID),
+							zap.Error(err))
+					}
+				}(currentDelivery)
+			}
+			// Create new delivery
+			currentDelivery = models.NewDelivery(point.DeliveryID)
+			previousPoint = nil
+		}
+		// in case of first point
+		if previousPoint != nil {
+			err := currentDelivery.AddSegment(*previousPoint, *point)
+			if err != nil {
+				// if the new point is invalid, we skip this point and reach to the next
+				p.log.Warn("Failed to add new delivery segment", zap.Error(err))
+				continue
+			}
+			previousPoint = point
+		} else {
+			previousPoint = point
 		}
 	}
+
+	// Process the last Delivery
+	go func(delivery *models.Delivery) {
+		err := p.processSingleDelivery(currentDelivery)
+		if err != nil {
+			p.log.Warn("Failed to process delivery",
+				zap.Int("delivery_id", delivery.ID),
+				zap.Error(err))
+		}
+	}(currentDelivery)
 
 	return nil
 }

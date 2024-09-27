@@ -1,5 +1,7 @@
 github.com/aref81/snappbox_fare_estimator v0.0.0-20240926212217-4931ec870fc2 h1:x4KqtIsEXWl0kKunQsKHeLpT/D4hJE2Rjureom2XWe4=
 github.com/aref81/snappbox_fare_estimator v0.0.0-20240926212217-4931ec870fc2/go.mod h1:/edq/kM3BCgns1ByQ9VaIjX5at5yFRVqIikllQFr44w=
+github.com/aref81/snappbox_fare_estimator/shared/broker v0.0.0-20240927092659-252b60bd8d41 h1:VkTuZHHc1t+vukTsuTxhZPWQbgyViXxea1HJL8hpbMY=
+github.com/aref81/snappbox_fare_estimator/shared/broker v0.0.0-20240927092659-252b60bd8d41/go.mod h1:sBu2dqEE8rzMxeueOOR1rFjJPNHmBV6J+NYk9uu0Zb0=
 github.com/aref81/snappbox_fare_estimator/shared/logger v0.0.0-20240926202553-a85b904b3806 h1:IBrINgZGWFTFV9yO/utpstinv8Z4R6jVQuLPoaAP2Ig=
 github.com/aref81/snappbox_fare_estimator/shared/logger v0.0.0-20240926202553-a85b904b3806/go.mod h1:FzN4us0KI+vYOQAjcaFZe1vF/3dX8LBQzcqrMdjaIcI=
 github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240926200124-090789e81680 h1:bcVATXxU/fnfXg5QeO/2bjXnm3FsnYDpTyuiwcpxWU8=
@@ -8,6 +10,10 @@ github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240926212217-49
 github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240926212217-4931ec870fc2/go.mod h1:T+zCpliglhwncbuyfMTzJsRDfRKLz2foPvUNEdYsN3k=
 github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240926212332-3c4322a338ae h1:ncGiRwfnFHDY1LtQa9EYazSRxHCNUPGD0eg0fSSQqlc=
 github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240926212332-3c4322a338ae/go.mod h1:mX9FuuMSiTwTi2u9GRYXPG4c5nVfraBJFkv+gp+/osQ=
+github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240926212849-a7b46d29309e h1:O1PbUx8irJA5bRVEM4YT+3DokUkDfAwYDBwQnGtr78c=
+github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240926212849-a7b46d29309e/go.mod h1:mX9FuuMSiTwTi2u9GRYXPG4c5nVfraBJFkv+gp+/osQ=
+github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240927094601-7e37ae843ece h1:qd9p3jdX0FEdAJG1f7cvCapXxMpUiifIzxB/pTkI9u8=
+github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240927094601-7e37ae843ece/go.mod h1:mX9FuuMSiTwTi2u9GRYXPG4c5nVfraBJFkv+gp+/osQ=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
