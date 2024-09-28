@@ -63,7 +63,7 @@ func validateSegment(segment DeliverySegment) error {
 	if segment.Speed <= 100.0 {
 		return nil
 	} else {
-		return fmt.Errorf("invalid delivery point, speed = %f", segment.Speed)
+		return fmt.Errorf("invalid processor point, speed = %f", segment.Speed)
 	}
 }
 

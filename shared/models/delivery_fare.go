@@ -1,6 +1,6 @@
 package models
 
-// DeliveryFare holds Fare amount calculated for delivery
+// DeliveryFare holds Fare amount calculated for processor
 type DeliveryFare struct {
 	ID   int
 	Fare float64

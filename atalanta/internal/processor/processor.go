@@ -1,4 +1,4 @@
-package delivery_fare
+package processor
 
 import (
 	"context"
@@ -42,7 +42,7 @@ func (p *Processor) ProcessDeliveries() {
 	for msg := range msgs {
 		var delivery models.Delivery
 		if err := json.Unmarshal(msg.Body, &delivery); err != nil {
-			p.log.Warn("Failed to unmarshal delivery", zap.Error(err))
+			p.log.Warn("Failed to unmarshal processor", zap.Error(err))
 			continue
 		}
 

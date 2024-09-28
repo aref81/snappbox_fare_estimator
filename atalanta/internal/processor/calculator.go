@@ -1,4 +1,4 @@
-package delivery_fare
+package processor
 
 import (
 	"github.com/aref81/snappbox_fare_estimator/atalanta/config"
@@ -11,7 +11,7 @@ type fareCalculator struct {
 	timeBoundaries config.TimeBoundariesConfig
 }
 
-// CalculateFare calculates the fare amount for each delivery based on fare rules
+// CalculateFare calculates the fare amount for each processor based on fare rules
 func (c *fareCalculator) calculateFare(delivery *models.Delivery) float64 {
 	totalFare := c.fareConfig.FlagAmount
 

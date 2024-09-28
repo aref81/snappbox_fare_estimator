@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/aref81/snappbox_fare_estimator/atalanta/config"
-	"github.com/aref81/snappbox_fare_estimator/atalanta/internal/delivery_fare"
+	"github.com/aref81/snappbox_fare_estimator/atalanta/internal/processor"
 	"github.com/aref81/snappbox_fare_estimator/shared/broker/rabbitMQ"
 	"github.com/aref81/snappbox_fare_estimator/shared/logger"
 	"go.uber.org/zap"
@@ -45,9 +45,9 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	// Initialize processor
-	processor := delivery_fare.NewProcessor(rabbitMQPublisher, rabbitMQConsumer, zLogger, cfg.FareRules, cfg.TimeBoundaries)
-	go processor.ProcessDeliveries()
+	// Initialize prc
+	prc := processor.NewProcessor(rabbitMQPublisher, rabbitMQConsumer, zLogger, cfg.FareRules, cfg.TimeBoundaries)
+	go prc.ProcessDeliveries()
 	wg.Add(1)
 
 	zLogger.Info("Atalanta microservice started successfully")

@@ -45,7 +45,7 @@ func (r *DeliveryReader) StreamDeliveryPoints(publisherChan chan *models.Deliver
 
 		id, err := strconv.Atoi(row[0])
 		if err != nil {
-			log.Warn("Invalid delivery ID", zap.String("value", row[0]))
+			log.Warn("Invalid processor ID", zap.String("value", row[0]))
 			continue
 		}
 		lat, err := strconv.ParseFloat(row[1], 64)

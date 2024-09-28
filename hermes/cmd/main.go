@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/aref81/snappbox_fare_estimator/hermes/config"
-	"github.com/aref81/snappbox_fare_estimator/hermes/internal/delivery"
+	"github.com/aref81/snappbox_fare_estimator/hermes/internal/processor"
 	"github.com/aref81/snappbox_fare_estimator/hermes/pkg/input/csv"
 	"github.com/aref81/snappbox_fare_estimator/shared/broker/rabbitMQ"
 	"github.com/aref81/snappbox_fare_estimator/shared/logger"
@@ -46,7 +46,7 @@ func main() {
 	wg.Add(1)
 
 	// Initialize publisher stream
-	processor := delivery.NewDeliveryProcessor(rabbitMQPublisher, zLogger)
+	processor := processor.NewDeliveryProcessor(rabbitMQPublisher, zLogger)
 	go processor.ProcessDeliveries(deliveryPointChan)
 	wg.Add(1)
 

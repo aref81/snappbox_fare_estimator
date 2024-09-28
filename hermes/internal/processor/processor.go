@@ -1,4 +1,4 @@
-package delivery
+package processor
 
 import (
 	"context"
@@ -26,20 +26,20 @@ func (p *Processor) ProcessDeliveries(deliveryPointChan <-chan *models.DeliveryP
 	var previousPoint *models.DeliveryPoint
 
 	for point := range deliveryPointChan {
-		// If delivery ID changes, process the last delivery and start a new one
+		// If processor ID changes, process the last processor and start a new one
 		if currentDelivery == nil || currentDelivery.ID != point.DeliveryID {
 			if currentDelivery != nil {
-				// process previous delivery
+				// process previous processor
 				go func(delivery *models.Delivery) {
 					err := p.processSingleDelivery(delivery)
 					if err != nil {
-						p.log.Warn("Failed to process delivery",
+						p.log.Warn("Failed to process processor",
 							zap.Int("delivery_id", delivery.ID),
 							zap.Error(err))
 					}
 				}(currentDelivery)
 			}
-			// Create new delivery
+			// Create new processor
 			currentDelivery = models.NewDelivery(point.DeliveryID)
 			previousPoint = nil
 		}
@@ -48,7 +48,7 @@ func (p *Processor) ProcessDeliveries(deliveryPointChan <-chan *models.DeliveryP
 			err := currentDelivery.AddSegment(*previousPoint, *point)
 			if err != nil {
 				// if the new point is invalid, we skip this point and reach to the next
-				p.log.Warn("Failed to add new delivery segment", zap.Error(err))
+				p.log.Warn("Failed to add new processor segment", zap.Error(err))
 				continue
 			}
 			previousPoint = point
@@ -61,7 +61,7 @@ func (p *Processor) ProcessDeliveries(deliveryPointChan <-chan *models.DeliveryP
 	go func(delivery *models.Delivery) {
 		err := p.processSingleDelivery(currentDelivery)
 		if err != nil {
-			p.log.Warn("Failed to process delivery",
+			p.log.Warn("Failed to process processor",
 				zap.Int("delivery_id", delivery.ID),
 				zap.Error(err))
 		}
@@ -70,17 +70,17 @@ func (p *Processor) ProcessDeliveries(deliveryPointChan <-chan *models.DeliveryP
 	return nil
 }
 
-// processSingleDelivery processes a delivery, including validation and pushing
+// processSingleDelivery processes a processor, including validation and pushing
 func (p *Processor) processSingleDelivery(delivery *models.Delivery) error {
 	deliveryBytes, err := json.Marshal(delivery)
 	if err != nil {
-		p.log.Error("Failed to serialize delivery", zap.Int("delivery_id", delivery.ID), zap.Error(err))
+		p.log.Error("Failed to serialize processor", zap.Int("delivery_id", delivery.ID), zap.Error(err))
 		return err
 	}
 
 	err = p.rabbitMQPublisher.PublishMessage(context.Background(), deliveryBytes)
 	if err != nil {
-		p.log.Error("Failed to publish delivery to RabbitMQ", zap.Int("delivery_id", delivery.ID), zap.Error(err))
+		p.log.Error("Failed to publish processor to RabbitMQ", zap.Int("delivery_id", delivery.ID), zap.Error(err))
 		return err
 	}
 
