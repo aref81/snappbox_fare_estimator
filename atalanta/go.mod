@@ -5,9 +5,9 @@ go 1.23rc2
 toolchain go1.23.1
 
 require (
-	github.com/aref81/snappbox_fare_estimator/shared/broker v0.0.0-20240927092659-252b60bd8d41
-	github.com/aref81/snappbox_fare_estimator/shared/logger v0.0.0-20240927113355-79e1652ebead
-	github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240927113355-79e1652ebead
+	github.com/aref81/snappbox_fare_estimator/shared/broker v0.0.0-20240927113355-79e1652ebead
+	github.com/aref81/snappbox_fare_estimator/shared/logger v0.0.0-20240928073531-9280fc692104
+	github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240928073531-9280fc692104
 	github.com/spf13/viper v1.19.0
 	go.uber.org/zap v1.27.0
 )

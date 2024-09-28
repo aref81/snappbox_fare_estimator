@@ -31,3 +31,14 @@ services:
       - ./configs/atalanta_config.yaml:/root/config/config.yaml
     depends_on:
       - rabbitmq
+
+  hephaestus:
+    build:
+      context: ../hephaestus
+      dockerfile: Dockerfile
+    container_name: hephaestus
+    volumes:
+      - ./configs/hephaestus_config.yaml:/root/config/config.yaml
+      - ./output/:/root/output/
+    depends_on:
+      - rabbitmq

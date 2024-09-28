@@ -15,8 +15,9 @@ type RabbitMQConfig struct {
 
 // CSVConfig holds CSV file config
 type CSVConfig struct {
-	FilePath  string `mapstructure:"file_path" json:"file_path"`
-	BatchSize int    `mapstructure:"batch_size" json:"batch_size"`
+	FilePath      string `mapstructure:"file_path" json:"file_path"`
+	BatchSize     int    `mapstructure:"batch_size" json:"batch_size"`
+	FlushInterval int    `mapstructure:"flush_interval" json:"flush_interval"`
 }
 
 // Config is the config structure of the Hephaestus service
