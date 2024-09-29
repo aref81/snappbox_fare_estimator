@@ -70,11 +70,11 @@ func main() {
 	}()
 	wg.Add(1)
 
+	wg.Wait()
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
 	zLogger.Info("Shutting down gracefully")
-	wg.Wait()
 	cancel()
 }

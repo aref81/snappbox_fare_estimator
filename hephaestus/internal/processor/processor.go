@@ -6,6 +6,7 @@ import (
 	"github.com/aref81/snappbox_fare_estimator/cmd/hephaestus/pkg/output"
 	"github.com/aref81/snappbox_fare_estimator/shared/broker/rabbitMQ"
 	"github.com/aref81/snappbox_fare_estimator/shared/models"
+	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 	"sync"
 	"time"
@@ -51,12 +52,14 @@ func (p *Processor) Consume(ctx context.Context) error {
 		for {
 			select {
 			case msg := <-msgs:
-				var fare models.DeliveryFare
-				if err := json.Unmarshal(msg.Body, &fare); err != nil {
-					p.log.Error("Failed to unmarshal delivery fare", zap.Error(err))
-					continue
-				}
-				p.addToBuffer(&fare)
+				go func(delivery amqp.Delivery) {
+					var fare models.DeliveryFare
+					if err := json.Unmarshal(delivery.Body, &fare); err != nil {
+						p.log.Error("Failed to unmarshal delivery fare", zap.Error(err))
+						return
+					}
+					p.addToBuffer(&fare)
+				}(msg)
 
 			case <-ticker.C:
 				p.log.Info("Flushing buffer due to timeout")
@@ -87,9 +90,6 @@ func (p *Processor) addToBuffer(fare *models.DeliveryFare) {
 
 // flushBuffer writes the data in the buffer into a csv file on disk
 func (p *Processor) flushBuffer() {
-	p.mutex.Lock()
-	defer p.mutex.Unlock()
-
 	if len(p.fareBuffer) == 0 {
 		return
 	}
