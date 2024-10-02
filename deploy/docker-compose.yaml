@@ -10,6 +10,11 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   hermes:
     build:
@@ -20,7 +25,8 @@ services:
       - ./data:/root/data  # Mount your local data directory for CSV files
       - ./configs/hermes_config.yaml:/root/config/config.yaml
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
 
   atalanta:
     build:
@@ -30,4 +36,17 @@ services:
     volumes:
       - ./configs/atalanta_config.yaml:/root/config/config.yaml
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+
+  hephaestus:
+    build:
+      context: ../hephaestus
+      dockerfile: Dockerfile
+    container_name: hephaestus
+    volumes:
+      - ./configs/hephaestus_config.yaml:/root/config/config.yaml
+      - ./output/:/root/output/
+    depends_on:
+      rabbitmq:
+        condition: service_healthy

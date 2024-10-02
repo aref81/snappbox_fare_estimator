@@ -6,8 +6,10 @@ import (
 	"github.com/aref81/snappbox_fare_estimator/cmd/hephaestus/pkg/output"
 	"github.com/aref81/snappbox_fare_estimator/shared/broker/rabbitMQ"
 	"github.com/aref81/snappbox_fare_estimator/shared/models"
+	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 	"sync"
+	"time"
 )
 
 type Processor struct {
@@ -17,56 +19,87 @@ type Processor struct {
 	fareBuffer         []*models.DeliveryFare
 	mutex              sync.Mutex
 	batchSize          int
+	flushInterval      time.Duration
 }
 
-func NewConsumer(rabbitMQConsumer *rabbitMQ.RabbitMQConsumer, deliveryFareWriter output.DeliveryFareWriter, batchSize int, logger *zap.Logger) (*Processor, error) {
+func NewConsumer(
+	rabbitMQConsumer *rabbitMQ.RabbitMQConsumer,
+	deliveryFareWriter output.DeliveryFareWriter,
+	batchSize int, flushInterval time.Duration,
+	logger *zap.Logger,
+) (*Processor, error) {
 	return &Processor{
 		log:                logger,
 		rabbitMQConsumer:   rabbitMQConsumer,
 		deliveryFareWriter: deliveryFareWriter,
 		fareBuffer:         []*models.DeliveryFare{},
 		batchSize:          batchSize,
+		flushInterval:      flushInterval,
 	}, nil
 }
 
-func (c *Processor) Consume(ctx context.Context) error {
-	msgs, err := c.rabbitMQConsumer.Consume(context.Background())
+// Consume receives the DeliveryFare data from RabbitMQ and writes them into a csv file in efficient way
+func (p *Processor) Consume(ctx context.Context) error {
+	msgs, err := p.rabbitMQConsumer.Consume(context.Background())
 	if err != nil {
-		c.log.Fatal("Failed to consume messages", zap.Error(err))
+		p.log.Fatal("Failed to consume messages", zap.Error(err))
 	}
 
-	for msg := range msgs {
-		var fare models.DeliveryFare
-		if err := json.Unmarshal(msg.Body, &fare); err != nil {
-			c.log.Error("Failed to unmarshal delivery fare", zap.Error(err))
-			continue
+	ticker := time.NewTicker(p.flushInterval)
+	defer ticker.Stop()
+
+	go func() {
+		for {
+			select {
+			case msg := <-msgs:
+				go func(delivery amqp.Delivery) {
+					var fare models.DeliveryFare
+					if err := json.Unmarshal(delivery.Body, &fare); err != nil {
+						p.log.Error("Failed to unmarshal delivery fare", zap.Error(err))
+						return
+					}
+					p.addToBuffer(&fare)
+				}(msg)
+
+			case <-ticker.C:
+				p.log.Info("Flushing buffer due to timeout")
+				p.flushBuffer()
+
+			case <-ctx.Done():
+				p.flushBuffer()
+				return
+			}
 		}
-
-		c.addToBuffer(&fare)
-	}
+	}()
 
 	<-ctx.Done()
-	c.flushBuffer()
 	return nil
 }
 
-func (c *Processor) addToBuffer(fare *models.DeliveryFare) {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
+// addToBuffer temporarily stores the received Deliveries in memory to later flush them into disk
+// flushing is done when batch size exceeds or timeout is reached
+func (p *Processor) addToBuffer(fare *models.DeliveryFare) {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
 
-	c.fareBuffer = append(c.fareBuffer, fare)
-	if len(c.fareBuffer) >= c.batchSize {
-		c.flushBuffer()
+	p.fareBuffer = append(p.fareBuffer, fare)
+	if len(p.fareBuffer) >= p.batchSize {
+		p.flushBuffer()
 	}
 }
 
-func (c *Processor) flushBuffer() {
-	c.log.Info("Flushing batch to writer", zap.Int("batch_size", len(c.fareBuffer)))
-
-	err := c.deliveryFareWriter.WriteBatch(c.fareBuffer, c.log)
-	if err != nil {
-		c.log.Error("Failed to write batch", zap.Error(err))
+// flushBuffer writes the data in the buffer into a csv file on disk
+func (p *Processor) flushBuffer() {
+	if len(p.fareBuffer) == 0 {
+		return
 	}
 
-	c.fareBuffer = []*models.DeliveryFare{}
+	p.log.Info("Flushing batch to writer", zap.Int("batch_size", len(p.fareBuffer)))
+
+	err := p.deliveryFareWriter.WriteBatch(p.fareBuffer, p.log)
+	if err != nil {
+		p.log.Error("Failed to write batch", zap.Error(err))
+	}
+
+	p.fareBuffer = []*models.DeliveryFare{}
 }

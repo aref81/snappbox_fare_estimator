@@ -1,7 +1,8 @@
 rabbitmq:
-  url: "amqp://guest:guest@localhost:5672/"
+  url: "amqp://guest:guest@rabbitmq:5672/"
   queue: "fares-data"
 
 csv:
-  file_path: "output.csv"
-  batch_size: 1000
+  file_path: "output/output.csv"
+  batch_size: 100
+  flush_interval: 30
