@@ -1,7 +1,5 @@
 github.com/aref81/snappbox_fare_estimator v0.0.0-20240926212217-4931ec870fc2 h1:x4KqtIsEXWl0kKunQsKHeLpT/D4hJE2Rjureom2XWe4=
 github.com/aref81/snappbox_fare_estimator v0.0.0-20240926212217-4931ec870fc2/go.mod h1:/edq/kM3BCgns1ByQ9VaIjX5at5yFRVqIikllQFr44w=
-github.com/aref81/snappbox_fare_estimator/shared/broker v0.0.0-20241002142244-45718bae8f9f h1:U/yideGYzdh6rECQ+T4IiJDGED3FDSsy1aSJBoFEfQM=
-github.com/aref81/snappbox_fare_estimator/shared/broker v0.0.0-20241002142244-45718bae8f9f/go.mod h1:oBD/f4Ps4ef6P+X5JDZzg7rAz1CnMxSZ0Hvc6VbQ8No=
 github.com/aref81/snappbox_fare_estimator/shared/broker v0.0.0-20241002164903-33c1ab193693 h1:5FlDaJRFSZm6fGklnVos3T3c9kQVJoMC9i9oHyeGwHg=
 github.com/aref81/snappbox_fare_estimator/shared/broker v0.0.0-20241002164903-33c1ab193693/go.mod h1:oBD/f4Ps4ef6P+X5JDZzg7rAz1CnMxSZ0Hvc6VbQ8No=
 github.com/aref81/snappbox_fare_estimator/shared/logger v0.0.0-20240928073531-9280fc692104 h1:XmyzvZa8WhtGmlfsm1JGJ1/OjBFuYu6LTVHsnk1LbZc=

@@ -3,11 +3,13 @@ package processor
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/aref81/snappbox_fare_estimator/atalanta/config"
 	"github.com/aref81/snappbox_fare_estimator/shared/broker"
 	"github.com/aref81/snappbox_fare_estimator/shared/models"
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
+	"time"
 )
 
 type Processor struct {
@@ -40,6 +42,9 @@ func (p *Processor) ProcessDeliveries() {
 		p.log.Fatal("Failed to consume messages", zap.Error(err))
 	}
 
+	startTime := time.Now()
+	i := 0
+
 	for msg := range msgs {
 		var delivery models.Delivery
 		if err := json.Unmarshal(msg.Body, &delivery); err != nil {
@@ -54,6 +59,12 @@ func (p *Processor) ProcessDeliveries() {
 			}
 		}(&delivery)
 
+		if i%1000 == 0 {
+			p.log.Info("Processed",
+				zap.Int("total processed deliveries", i),
+				zap.String("Duration", fmt.Sprintf("%s", time.Now().Sub(startTime))))
+		}
+		i++
 	}
 }
 
@@ -78,6 +89,6 @@ func (p *Processor) processDeliveryFare(delivery *models.Delivery) error {
 		return err
 	}
 
-	p.log.Info("Fare calculated and sent", zap.Int("delivery_id", delivery.ID), zap.Float64("total_fare", totalFare))
+	//p.log.Info("Fare calculated and sent", zap.Int("delivery_id", delivery.ID), zap.Float64("total_fare", totalFare))
 	return nil
 }

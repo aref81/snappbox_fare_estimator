@@ -3,4 +3,4 @@ rabbitmq:
   queue: "processor-data"
 
 csv:
-  file_path: "./data/delivery_data.csv"
+  file_path: "./data/delivery_data_chunk_0.csv"

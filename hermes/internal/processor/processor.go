@@ -3,10 +3,12 @@ package processor
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/aref81/snappbox_fare_estimator/shared/broker"
 	"github.com/aref81/snappbox_fare_estimator/shared/broker/rabbitMQ"
 	"github.com/aref81/snappbox_fare_estimator/shared/models"
 	"go.uber.org/zap"
+	"time"
 )
 
 type Processor struct {
@@ -25,6 +27,7 @@ func NewDeliveryProcessor(rabbitMQPublisher *rabbitMQ.RabbitMQPublisher, log *za
 func (p *Processor) ProcessDeliveries(deliveryPointChan <-chan *models.DeliveryPoint) error {
 	var currentDelivery *models.Delivery
 	var previousPoint *models.DeliveryPoint
+	startTime := time.Now()
 
 	for point := range deliveryPointChan {
 		// If processor ID changes, process the last processor and start a new one
@@ -68,6 +71,8 @@ func (p *Processor) ProcessDeliveries(deliveryPointChan <-chan *models.DeliveryP
 		}
 	}(currentDelivery)
 
+	p.log.Info("All the delivery records sent from hermes successfully.",
+		zap.String("Duration", fmt.Sprintf("%s", time.Now().Sub(startTime))))
 	return nil
 }
 
@@ -85,6 +90,6 @@ func (p *Processor) processSingleDelivery(delivery *models.Delivery) error {
 		return err
 	}
 
-	p.log.Info("Delivery processed successfully", zap.Int("delivery_id", delivery.ID))
+	//p.log.Info("Delivery processed successfully", zap.Int("delivery_id", delivery.ID))
 	return nil
 }

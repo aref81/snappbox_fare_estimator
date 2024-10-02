@@ -3,6 +3,7 @@ package processor
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/aref81/snappbox_fare_estimator/cmd/hephaestus/pkg/output"
 	"github.com/aref81/snappbox_fare_estimator/shared/broker"
 	"github.com/aref81/snappbox_fare_estimator/shared/models"
@@ -49,6 +50,9 @@ func (p *Processor) Consume(ctx context.Context) error {
 	defer ticker.Stop()
 
 	go func() {
+		startTime := time.Now()
+		i := 0
+
 		for {
 			select {
 			case msg := <-msgs:
@@ -62,7 +66,9 @@ func (p *Processor) Consume(ctx context.Context) error {
 				}(msg)
 
 			case <-ticker.C:
-				p.log.Info("Flushing buffer due to timeout")
+				p.log.Info("Flushing buffer due to timeout",
+					zap.Int("total processed deliveries", i),
+					zap.String("Duration", fmt.Sprintf("%s", time.Now().Sub(startTime))))
 				p.flushBuffer()
 
 			case <-ctx.Done():
