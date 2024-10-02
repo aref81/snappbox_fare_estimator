@@ -14,7 +14,7 @@ require (
 
 require (
 	github.com/aref81/snappbox_fare_estimator v0.0.0-20240926212217-4931ec870fc2 // indirect
-	github.com/aref81/snappbox_fare_estimator/shared/broker v0.0.0-20240927113355-79e1652ebead // indirect
+	github.com/aref81/snappbox_fare_estimator/shared/broker v0.0.0-20241002142244-45718bae8f9f // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect

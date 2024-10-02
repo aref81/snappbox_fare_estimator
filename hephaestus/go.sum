@@ -1,13 +1,11 @@
 github.com/aref81/snappbox_fare_estimator v0.0.0-20240926212217-4931ec870fc2 h1:x4KqtIsEXWl0kKunQsKHeLpT/D4hJE2Rjureom2XWe4=
 github.com/aref81/snappbox_fare_estimator v0.0.0-20240926212217-4931ec870fc2/go.mod h1:/edq/kM3BCgns1ByQ9VaIjX5at5yFRVqIikllQFr44w=
-github.com/aref81/snappbox_fare_estimator/shared/broker v0.0.0-20240927113355-79e1652ebead h1:PDbR6vf5STdhNubz0455Ao08z2tTl4l4UYoEU+XMLdw=
-github.com/aref81/snappbox_fare_estimator/shared/broker v0.0.0-20240927113355-79e1652ebead/go.mod h1:sBu2dqEE8rzMxeueOOR1rFjJPNHmBV6J+NYk9uu0Zb0=
-github.com/aref81/snappbox_fare_estimator/shared/logger v0.0.0-20240926212332-3c4322a338ae h1:DyQ2/Ed0knv7/d6qzBmjKkOBX2ZL+9p7lFRsRpcKJL0=
-github.com/aref81/snappbox_fare_estimator/shared/logger v0.0.0-20240926212332-3c4322a338ae/go.mod h1:FzN4us0KI+vYOQAjcaFZe1vF/3dX8LBQzcqrMdjaIcI=
+github.com/aref81/snappbox_fare_estimator/shared/broker v0.0.0-20241002142244-45718bae8f9f h1:U/yideGYzdh6rECQ+T4IiJDGED3FDSsy1aSJBoFEfQM=
+github.com/aref81/snappbox_fare_estimator/shared/broker v0.0.0-20241002142244-45718bae8f9f/go.mod h1:oBD/f4Ps4ef6P+X5JDZzg7rAz1CnMxSZ0Hvc6VbQ8No=
+github.com/aref81/snappbox_fare_estimator/shared/broker v0.0.0-20241002164903-33c1ab193693 h1:5FlDaJRFSZm6fGklnVos3T3c9kQVJoMC9i9oHyeGwHg=
+github.com/aref81/snappbox_fare_estimator/shared/broker v0.0.0-20241002164903-33c1ab193693/go.mod h1:oBD/f4Ps4ef6P+X5JDZzg7rAz1CnMxSZ0Hvc6VbQ8No=
 github.com/aref81/snappbox_fare_estimator/shared/logger v0.0.0-20240928073531-9280fc692104 h1:XmyzvZa8WhtGmlfsm1JGJ1/OjBFuYu6LTVHsnk1LbZc=
 github.com/aref81/snappbox_fare_estimator/shared/logger v0.0.0-20240928073531-9280fc692104/go.mod h1:FzN4us0KI+vYOQAjcaFZe1vF/3dX8LBQzcqrMdjaIcI=
-github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240927113355-79e1652ebead h1:NExczcIX/0G5biGpiMuGiPmRB5Z1t1FNQRKDUgBIikQ=
-github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240927113355-79e1652ebead/go.mod h1:mX9FuuMSiTwTi2u9GRYXPG4c5nVfraBJFkv+gp+/osQ=
 github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240928073531-9280fc692104 h1:kwwcba55QT0f+4/PDawYiMdaNRXbLpF/bGBkajrPqwk=
 github.com/aref81/snappbox_fare_estimator/shared/models v0.0.0-20240928073531-9280fc692104/go.mod h1:mX9FuuMSiTwTi2u9GRYXPG4c5nVfraBJFkv+gp+/osQ=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

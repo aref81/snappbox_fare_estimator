@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/aref81/snappbox_fare_estimator/cmd/hephaestus/pkg/output"
-	"github.com/aref81/snappbox_fare_estimator/shared/broker/rabbitMQ"
+	"github.com/aref81/snappbox_fare_estimator/shared/broker"
 	"github.com/aref81/snappbox_fare_estimator/shared/models"
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
@@ -14,7 +14,7 @@ import (
 
 type Processor struct {
 	log                *zap.Logger
-	rabbitMQConsumer   *rabbitMQ.RabbitMQConsumer
+	consumer           broker.Consumer[amqp.Delivery]
 	deliveryFareWriter output.DeliveryFareWriter
 	fareBuffer         []*models.DeliveryFare
 	mutex              sync.Mutex
@@ -23,14 +23,14 @@ type Processor struct {
 }
 
 func NewConsumer(
-	rabbitMQConsumer *rabbitMQ.RabbitMQConsumer,
+	consumer broker.Consumer[amqp.Delivery],
 	deliveryFareWriter output.DeliveryFareWriter,
 	batchSize int, flushInterval time.Duration,
 	logger *zap.Logger,
 ) (*Processor, error) {
 	return &Processor{
+		consumer:           consumer,
 		log:                logger,
-		rabbitMQConsumer:   rabbitMQConsumer,
 		deliveryFareWriter: deliveryFareWriter,
 		fareBuffer:         []*models.DeliveryFare{},
 		batchSize:          batchSize,
@@ -40,7 +40,7 @@ func NewConsumer(
 
 // Consume receives the DeliveryFare data from RabbitMQ and writes them into a csv file in efficient way
 func (p *Processor) Consume(ctx context.Context) error {
-	msgs, err := p.rabbitMQConsumer.Consume(context.Background())
+	msgs, err := p.consumer.Consume(context.Background())
 	if err != nil {
 		p.log.Fatal("Failed to consume messages", zap.Error(err))
 	}

@@ -3,20 +3,21 @@ package processor
 import (
 	"context"
 	"encoding/json"
+	"github.com/aref81/snappbox_fare_estimator/shared/broker"
 	"github.com/aref81/snappbox_fare_estimator/shared/broker/rabbitMQ"
 	"github.com/aref81/snappbox_fare_estimator/shared/models"
 	"go.uber.org/zap"
 )
 
 type Processor struct {
-	rabbitMQPublisher *rabbitMQ.RabbitMQPublisher
-	log               *zap.Logger
+	publisher broker.Publisher
+	log       *zap.Logger
 }
 
 func NewDeliveryProcessor(rabbitMQPublisher *rabbitMQ.RabbitMQPublisher, log *zap.Logger) *Processor {
 	return &Processor{
-		rabbitMQPublisher: rabbitMQPublisher,
-		log:               log,
+		publisher: rabbitMQPublisher,
+		log:       log,
 	}
 }
 
@@ -78,7 +79,7 @@ func (p *Processor) processSingleDelivery(delivery *models.Delivery) error {
 		return err
 	}
 
-	err = p.rabbitMQPublisher.PublishMessage(context.Background(), deliveryBytes)
+	err = p.publisher.PublishMessage(context.Background(), deliveryBytes)
 	if err != nil {
 		p.log.Error("Failed to publish processor to RabbitMQ", zap.Int("delivery_id", delivery.ID), zap.Error(err))
 		return err
