@@ -4,26 +4,27 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/aref81/snappbox_fare_estimator/atalanta/config"
-	"github.com/aref81/snappbox_fare_estimator/shared/broker/rabbitMQ"
+	"github.com/aref81/snappbox_fare_estimator/shared/broker"
 	"github.com/aref81/snappbox_fare_estimator/shared/models"
+	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 )
 
 type Processor struct {
-	rabbitMQPublisher *rabbitMQ.RabbitMQPublisher
-	rabbitMQConsumer  *rabbitMQ.RabbitMQConsumer
-	fareCalculator    *fareCalculator
-	log               *zap.Logger
+	publisher      broker.Publisher
+	consumer       broker.Consumer[amqp.Delivery]
+	fareCalculator *fareCalculator
+	log            *zap.Logger
 }
 
-func NewProcessor(publisher *rabbitMQ.RabbitMQPublisher,
-	consumer *rabbitMQ.RabbitMQConsumer,
+func NewProcessor(publisher broker.Publisher,
+	consumer broker.Consumer[amqp.Delivery],
 	log *zap.Logger,
 	fareRules config.FareRulesConfig,
 	timeBoundaries config.TimeBoundariesConfig) *Processor {
 	return &Processor{
-		rabbitMQPublisher: publisher,
-		rabbitMQConsumer:  consumer,
+		publisher: publisher,
+		consumer:  consumer,
 		fareCalculator: &fareCalculator{
 			fareConfig:     fareRules,
 			timeBoundaries: timeBoundaries,
@@ -34,7 +35,7 @@ func NewProcessor(publisher *rabbitMQ.RabbitMQPublisher,
 
 // ProcessDeliveries consume the deliveries coming from rabbitMQ and process the DeliveryFare for it
 func (p *Processor) ProcessDeliveries() {
-	msgs, err := p.rabbitMQConsumer.Consume(context.Background())
+	msgs, err := p.consumer.Consume(context.Background())
 	if err != nil {
 		p.log.Fatal("Failed to consume messages", zap.Error(err))
 	}
@@ -71,7 +72,7 @@ func (p *Processor) processDeliveryFare(delivery *models.Delivery) error {
 		return err
 	}
 
-	err = p.rabbitMQPublisher.PublishMessage(context.Background(), fareBytes)
+	err = p.publisher.PublishMessage(context.Background(), fareBytes)
 	if err != nil {
 		p.log.Error("Failed to publish fare", zap.Error(err))
 		return err

@@ -38,7 +38,7 @@ func (c *fareCalculator) calculateFare(delivery *models.Delivery) float64 {
 }
 
 func (c *fareCalculator) isDayTime(timestamp int64) bool {
-	t := time.Unix(timestamp, 0)
+	t := time.Unix(timestamp, 0).UTC()
 	hour := t.Hour()
 	return hour >= c.timeBoundaries.DayStartHour && hour < c.timeBoundaries.DayEndHour
 }
