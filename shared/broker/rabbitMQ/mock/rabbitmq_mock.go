@@ -6,16 +6,16 @@ import (
 	"sync"
 )
 
-// MockRabbitMQ simulates a RabbitMQ broker with multiple queues
+// MockRabbitMQ simulates a RabbitMQ broker with multiple Queues
 type MockRabbitMQ struct {
-	queues map[string]chan amqp.Delivery
+	Queues map[string]chan amqp.Delivery
 	mutex  sync.Mutex
 }
 
 // NewMockRabbitMQ initializes a new mock RabbitMQ broker
 func NewMockRabbitMQ() *MockRabbitMQ {
 	return &MockRabbitMQ{
-		queues: make(map[string]chan amqp.Delivery),
+		Queues: make(map[string]chan amqp.Delivery),
 	}
 }
 
@@ -24,8 +24,8 @@ func (m *MockRabbitMQ) DeclareQueue(queueName string, bufferSize int) {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
-	if _, exists := m.queues[queueName]; !exists {
-		m.queues[queueName] = make(chan amqp.Delivery, bufferSize)
+	if _, exists := m.Queues[queueName]; !exists {
+		m.Queues[queueName] = make(chan amqp.Delivery, bufferSize)
 	}
 }
 
@@ -34,7 +34,7 @@ func (m *MockRabbitMQ) GetQueue(queueName string) (chan amqp.Delivery, error) {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
-	queue, exists := m.queues[queueName]
+	queue, exists := m.Queues[queueName]
 	if !exists {
 		return nil, errors.New("queue not found")
 	}
@@ -46,11 +46,11 @@ func (m *MockRabbitMQ) CloseQueue(queueName string) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
-	queue, exists := m.queues[queueName]
+	queue, exists := m.Queues[queueName]
 	if !exists {
 		return errors.New("queue not found")
 	}
 	close(queue)
-	delete(m.queues, queueName)
+	delete(m.Queues, queueName)
 	return nil
 }

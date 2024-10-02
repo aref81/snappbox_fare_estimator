@@ -7,21 +7,21 @@ import (
 
 // MockRabbitMQPublisher implements the RabbitMQPublisher interface for testing
 type MockRabbitMQPublisher struct {
-	mockBroker *MockRabbitMQ
-	queueName  string
+	MockBroker *MockRabbitMQ
+	QueueName  string
 }
 
 // NewMockRabbitMQPublisher initializes a new mock publisher
 func NewMockRabbitMQPublisher(mockBroker *MockRabbitMQ, queueName string) *MockRabbitMQPublisher {
 	return &MockRabbitMQPublisher{
-		mockBroker: mockBroker,
-		queueName:  queueName,
+		MockBroker: mockBroker,
+		QueueName:  queueName,
 	}
 }
 
 // PublishMessage publishes a message to the specified queue
 func (m *MockRabbitMQPublisher) PublishMessage(ctx context.Context, message []byte) error {
-	queue, err := m.mockBroker.GetQueue(m.queueName)
+	queue, err := m.MockBroker.GetQueue(m.QueueName)
 	if err != nil {
 		return err
 	}

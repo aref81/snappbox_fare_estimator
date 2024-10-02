@@ -7,21 +7,21 @@ import (
 
 // MockRabbitMQConsumer implements the RabbitMQConsumer interface for testing
 type MockRabbitMQConsumer struct {
-	mockBroker *MockRabbitMQ
-	queueName  string
+	MockBroker *MockRabbitMQ
+	QueueName  string
 }
 
 // NewMockRabbitMQConsumer initializes a new mock consumer
 func NewMockRabbitMQConsumer(mockBroker *MockRabbitMQ, queueName string) *MockRabbitMQConsumer {
 	return &MockRabbitMQConsumer{
-		mockBroker: mockBroker,
-		queueName:  queueName,
+		MockBroker: mockBroker,
+		QueueName:  queueName,
 	}
 }
 
 // Consume consumes messages from the specified queue
 func (m *MockRabbitMQConsumer) Consume(ctx context.Context) (<-chan amqp.Delivery, error) {
-	queue, err := m.mockBroker.GetQueue(m.queueName)
+	queue, err := m.MockBroker.GetQueue(m.QueueName)
 	if err != nil {
 		return nil, err
 	}
