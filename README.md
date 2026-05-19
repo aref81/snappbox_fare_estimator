@@ -87,6 +87,69 @@ to avoid keeping data for too long in the buffer.
 
 ---
 
+## Possible Extensions (Production Considerations)
+
+This project was intentionally designed as a **high-throughput data processing pipeline**.  
+For a production environment, the system could be extended in the following ways:
+
+### 1. REST API Layer (Query & Control Service)
+Introduce a dedicated API service to:
+- Expose delivery fare results via endpoints (e.g. `GET /fares/{delivery_id}`)
+- Trigger new processing jobs instead of relying on file-based input
+- Provide health checks and operational controls
+
+This would decouple **data ingestion and querying**, enabling integration with external systems and dashboards.
+
+### 2. Persistent Storage (PostgreSQL / OLAP)
+Currently, results are written to CSV files.  
+In production, a database layer could be introduced to:
+- Persist processed delivery fares
+- Support querying and analytics (aggregations, filtering, reporting)
+- Enable integration with BI tools
+
+A relational database (e.g., PostgreSQL) or analytical store could be used depending on query patterns.
+
+### 3. Streaming & Real-Time Processing
+Replace file-based ingestion with real-time data streams:
+- Use message producers (e.g., APIs or event streams) instead of CSV files
+- Enable continuous processing instead of batch-based execution
+
+This aligns with real-world systems where delivery data arrives continuously.
+
+### 4. Observability & Monitoring
+Enhance system visibility by adding:
+- Metrics collection (e.g., throughput, latency, queue size)
+- Centralized logging
+- Alerting for failures or bottlenecks
+
+This would improve reliability and make the system production-ready.
+
+### 5. Fault Tolerance & Reliability
+Improve resilience of the pipeline:
+- Retry mechanisms for failed message processing
+- Dead-letter queues for problematic messages
+- Idempotent processing to avoid duplication
+
+### 6. Horizontal Scaling & Load Balancing
+Each microservice can be scaled independently:
+- Increase consumers for high-throughput stages
+- Balance load across instances
+- Tune concurrency based on workload
+
+### 7. Data Validation & Quality Checks
+Add validation layers to:
+- Ensure correctness of incoming delivery data
+- Handle malformed or incomplete records gracefully
+- Improve overall data quality for downstream analytics
+
+### 8. Integration with External Systems
+Expose the system for integration with:
+- External APIs (e.g., partner platforms)
+- Analytics dashboards
+- Data pipelines in a larger ecosystem
+
+---
+
 ## Deployment Instructions
 
 The project can be deployed using **Docker** and **Docker Compose**. The services are containerized and can be orchestrated easily using the following steps:
