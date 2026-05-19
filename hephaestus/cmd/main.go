@@ -3,17 +3,18 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
+	"time"
+
 	"github.com/aref81/snappbox_fare_estimator/cmd/hephaestus/config"
 	"github.com/aref81/snappbox_fare_estimator/cmd/hephaestus/internal/processor"
 	"github.com/aref81/snappbox_fare_estimator/cmd/hephaestus/pkg/output/csv"
 	"github.com/aref81/snappbox_fare_estimator/shared/broker/rabbitMQ"
 	"github.com/aref81/snappbox_fare_estimator/shared/logger"
 	"go.uber.org/zap"
-	"os"
-	"os/signal"
-	"sync"
-	"syscall"
-	"time"
 )
 
 func main() {
@@ -60,21 +61,25 @@ func main() {
 	)
 
 	if err != nil {
-		zLogger.Fatal("Failed to Consumer Processor", zap.Error(err))
+		zLogger.Fatal("Failed to initial Consumer Processor", zap.Error(err))
 	}
 
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+	wg.Add(1)
 	go func() {
+		defer wg.Done()
 		if err := consumer.Consume(ctx); err != nil {
 			zLogger.Fatal("Error while consuming messages", zap.Error(err))
 		}
 	}()
-	wg.Add(1)
 
-	wg.Wait()
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	zLogger.Info("Hephaestus microservice started successfully")
 	<-quit
 
 	zLogger.Info("Shutting down gracefully")
 	cancel()
+	wg.Wait()
+	zLogger.Info("Hephaestus shut down complete")
 }

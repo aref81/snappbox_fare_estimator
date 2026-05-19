@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sync"
+	"time"
+
 	"github.com/aref81/snappbox_fare_estimator/cmd/hephaestus/pkg/output"
 	"github.com/aref81/snappbox_fare_estimator/shared/broker"
 	"github.com/aref81/snappbox_fare_estimator/shared/models"
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
-	"sync"
-	"time"
 )
 
 type Processor struct {
@@ -49,7 +50,11 @@ func (p *Processor) Consume(ctx context.Context) error {
 	ticker := time.NewTicker(p.flushInterval)
 	defer ticker.Stop()
 
+	innerWg := sync.WaitGroup{}
+	innerWg.Add(1)
 	go func() {
+		defer innerWg.Done()
+
 		startTime := time.Now()
 		i := 0
 
@@ -78,7 +83,7 @@ func (p *Processor) Consume(ctx context.Context) error {
 		}
 	}()
 
-	<-ctx.Done()
+	innerWg.Wait()
 	return nil
 }
 
