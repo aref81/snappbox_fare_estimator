@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sync"
+	"time"
+
 	"github.com/aref81/snappbox_fare_estimator/shared/broker"
 	"github.com/aref81/snappbox_fare_estimator/shared/broker/rabbitMQ"
 	"github.com/aref81/snappbox_fare_estimator/shared/models"
 	"go.uber.org/zap"
-	"time"
 )
 
 type Processor struct {
@@ -29,12 +31,15 @@ func (p *Processor) ProcessDeliveries(deliveryPointChan <-chan *models.DeliveryP
 	var previousPoint *models.DeliveryPoint
 	startTime := time.Now()
 
+	wg := sync.WaitGroup{}
 	for point := range deliveryPointChan {
 		// If processor ID changes, process the last processor and start a new one
 		if currentDelivery == nil || currentDelivery.ID != point.DeliveryID {
 			if currentDelivery != nil {
 				// process previous processor
+				wg.Add(1)
 				go func(delivery *models.Delivery) {
+					defer wg.Done()
 					err := p.processSingleDelivery(delivery)
 					if err != nil {
 						p.log.Warn("Failed to process processor",
@@ -62,8 +67,10 @@ func (p *Processor) ProcessDeliveries(deliveryPointChan <-chan *models.DeliveryP
 	}
 
 	// Process the last Delivery
+	wg.Add(1)
 	go func(delivery *models.Delivery) {
-		err := p.processSingleDelivery(currentDelivery)
+		defer wg.Done()
+		err := p.processSingleDelivery(delivery)
 		if err != nil {
 			p.log.Warn("Failed to process processor",
 				zap.Int("delivery_id", delivery.ID),
@@ -71,6 +78,7 @@ func (p *Processor) ProcessDeliveries(deliveryPointChan <-chan *models.DeliveryP
 		}
 	}(currentDelivery)
 
+	wg.Wait()
 	p.log.Info("All the delivery records sent from hermes successfully.",
 		zap.String("Duration", fmt.Sprintf("%s", time.Now().Sub(startTime))))
 	return nil

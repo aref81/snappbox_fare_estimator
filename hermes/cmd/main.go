@@ -2,6 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"sync"
+
 	"github.com/aref81/snappbox_fare_estimator/hermes/config"
 	"github.com/aref81/snappbox_fare_estimator/hermes/internal/processor"
 	"github.com/aref81/snappbox_fare_estimator/hermes/pkg/input/csv"
@@ -9,9 +13,6 @@ import (
 	"github.com/aref81/snappbox_fare_estimator/shared/logger"
 	"github.com/aref81/snappbox_fare_estimator/shared/models"
 	"go.uber.org/zap"
-	"log"
-	"os"
-	"sync"
 )
 
 func main() {
@@ -42,14 +43,21 @@ func main() {
 
 	// Initialize reader stream
 	reader := csv.NewDeliveryReader(cfg.CSV.FilePath)
-	go reader.StreamDeliveryPoints(deliveryPointChan, zLogger)
 	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		reader.StreamDeliveryPoints(deliveryPointChan, zLogger)
+	}()
 
 	// Initialize publisher stream
 	processor := processor.NewDeliveryProcessor(rabbitMQPublisher, zLogger)
-	go processor.ProcessDeliveries(deliveryPointChan)
 	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		processor.ProcessDeliveries(deliveryPointChan)
+	}()
 
 	zLogger.Info("Hermes microservice started successfully")
 	wg.Wait()
+	zLogger.Info("Hermes microservice finished successfully")
 }

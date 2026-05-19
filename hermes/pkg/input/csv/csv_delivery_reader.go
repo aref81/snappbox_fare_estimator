@@ -3,11 +3,13 @@ package csv
 import (
 	"encoding/csv"
 	"fmt"
+	"io"
+	"os"
+	"strconv"
+
 	"github.com/aref81/snappbox_fare_estimator/hermes/pkg/input"
 	"github.com/aref81/snappbox_fare_estimator/shared/models"
 	"go.uber.org/zap"
-	"os"
-	"strconv"
 )
 
 // DeliveryReader implements the input interface for working with CSV file
@@ -30,13 +32,21 @@ func (r *DeliveryReader) StreamDeliveryPoints(publisherChan chan *models.Deliver
 		return fmt.Errorf("failed to open file: %v", err)
 	}
 	defer file.Close()
+	defer close(publisherChan)
 
 	reader := csv.NewReader(file)
+
+	// Skip header row
+	_, err = reader.Read()
+	if err != nil {
+		log.Error("Failed to read CSV header", zap.Error(err))
+		return err
+	}
 
 	for {
 		row, err := reader.Read()
 		if err != nil {
-			if err.Error() == "EOF" {
+			if err == io.EOF {
 				break
 			}
 			log.Error("Failed to read row", zap.Error(err))
@@ -73,6 +83,5 @@ func (r *DeliveryReader) StreamDeliveryPoints(publisherChan chan *models.Deliver
 	}
 
 	log.Info("CSV streaming and publishing completed successfully")
-	close(publisherChan)
 	return nil
 }
