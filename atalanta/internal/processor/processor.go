@@ -4,12 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sync"
+	"time"
+
 	"github.com/aref81/snappbox_fare_estimator/atalanta/config"
 	"github.com/aref81/snappbox_fare_estimator/shared/broker"
 	"github.com/aref81/snappbox_fare_estimator/shared/models"
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
-	"time"
 )
 
 type Processor struct {
@@ -45,6 +47,7 @@ func (p *Processor) ProcessDeliveries() {
 	startTime := time.Now()
 	i := 0
 
+	wg := sync.WaitGroup{}
 	for msg := range msgs {
 		var delivery models.Delivery
 		if err := json.Unmarshal(msg.Body, &delivery); err != nil {
@@ -52,7 +55,9 @@ func (p *Processor) ProcessDeliveries() {
 			continue
 		}
 
+		wg.Add(1)
 		go func(delivery *models.Delivery) {
+			defer wg.Done()
 			err := p.processDeliveryFare(delivery)
 			if err != nil {
 				p.log.Warn("Failed to process Delivery Fare", zap.Error(err))
@@ -66,6 +71,7 @@ func (p *Processor) ProcessDeliveries() {
 		}
 		i++
 	}
+	wg.Wait()
 }
 
 // processDeliveryFare generate the DeliverFare for a single Delivery and push it to the rabbitMQ

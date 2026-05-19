@@ -2,14 +2,17 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
+
 	"github.com/aref81/snappbox_fare_estimator/atalanta/config"
 	"github.com/aref81/snappbox_fare_estimator/atalanta/internal/processor"
 	"github.com/aref81/snappbox_fare_estimator/shared/broker/rabbitMQ"
 	"github.com/aref81/snappbox_fare_estimator/shared/logger"
 	"go.uber.org/zap"
-	"log"
-	"os"
-	"sync"
 )
 
 func main() {
@@ -41,15 +44,23 @@ func main() {
 		zLogger.Fatal("Failed to initialize RabbitMQ consumer", zap.Error(err))
 		return
 	}
-	defer rabbitMQConsumer.Close()
 
 	wg := sync.WaitGroup{}
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
 	// Initialize prc
 	prc := processor.NewProcessor(rabbitMQPublisher, rabbitMQConsumer, zLogger, cfg.FareRules, cfg.TimeBoundaries)
-	go prc.ProcessDeliveries()
 	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		prc.ProcessDeliveries()
+	}()
 
 	zLogger.Info("Atalanta microservice started successfully")
+	<-quit
+	zLogger.Info("Atalanta shutting down gracefully")
+	rabbitMQConsumer.Close()
 	wg.Wait()
+	zLogger.Info("Atalanta microservice finished successfully")
 }
