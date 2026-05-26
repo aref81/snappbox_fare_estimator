@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.23 AS builder
+FROM golang:1.23-alpine AS builder
 LABEL authors="mohammadhoseinaref"
 
 WORKDIR /app
@@ -13,7 +13,7 @@ COPY . .
 RUN go build -o hephaestus ./cmd
 
 #Run stage
-FROM ubuntu:latest
+FROM alpine:latest
 
 WORKDIR /root/
 
