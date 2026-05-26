@@ -3,10 +3,11 @@ package csv
 import (
 	"encoding/csv"
 	"fmt"
-	"github.com/aref81/snappbox_fare_estimator/cmd/hephaestus/pkg/output"
-	"github.com/aref81/snappbox_fare_estimator/shared/models"
 	"os"
 	"sync"
+
+	"github.com/aref81/snappbox_fare_estimator/cmd/hephaestus/pkg/output"
+	"github.com/aref81/snappbox_fare_estimator/shared/models"
 
 	"go.uber.org/zap"
 )
@@ -54,3 +55,5 @@ func (w *Writer) WriteBatch(fares []*models.DeliveryFare, log *zap.Logger) error
 func (w *Writer) Close() {
 	w.file.Close()
 }
+
+var _ output.DeliveryFareWriter = (*Writer)(nil)

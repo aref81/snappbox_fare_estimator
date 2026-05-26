@@ -91,16 +91,22 @@ func (p *Processor) Consume(ctx context.Context) error {
 // flushing is done when batch size exceeds or timeout is reached
 func (p *Processor) addToBuffer(fare *models.DeliveryFare) {
 	p.mutex.Lock()
-	defer p.mutex.Unlock()
 
 	p.fareBuffer = append(p.fareBuffer, fare)
-	if len(p.fareBuffer) >= p.batchSize {
+	shouldFlush := len(p.fareBuffer) >= p.batchSize
+
+	p.mutex.Unlock()
+
+	if shouldFlush {
 		p.flushBuffer()
 	}
 }
 
 // flushBuffer writes the data in the buffer into a csv file on disk
 func (p *Processor) flushBuffer() {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+
 	if len(p.fareBuffer) == 0 {
 		return
 	}
