@@ -32,7 +32,7 @@ func LoadConfig() (*Config, error) {
 	viper.AddConfigPath("config/")
 
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Println("No config file found, using environment variables and defaults.")
+		return nil, fmt.Errorf("failed to read config file: %w (expected a YAML config to be mounted, e.g. deploy/configs/hermes_config.yaml)", err)
 	} else {
 		fmt.Printf("Config file loaded: %s\n", viper.ConfigFileUsed())
 	}

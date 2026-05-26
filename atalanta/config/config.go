@@ -3,8 +3,9 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/viper"
 	"log"
+
+	"github.com/spf13/viper"
 )
 
 // RabbitMQConfig holds RabbitMQ connection details
@@ -52,7 +53,7 @@ func LoadConfig() (*Config, error) {
 	viper.AddConfigPath("config/")
 
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Println("No config file found, using environment variables and defaults.")
+		return nil, fmt.Errorf("failed to read config file: %w (expected a YAML config to be mounted, e.g. deploy/configs/atalanta_config.yaml)", err)
 	} else {
 		fmt.Printf("Config file loaded: %s\n", viper.ConfigFileUsed())
 	}
@@ -73,5 +74,5 @@ func logConfig(config *Config) {
 	if err != nil {
 		return
 	}
-	log.Printf("Hermes Config: %s", conf)
+	log.Printf("Atalanta Config: %s", conf)
 }
